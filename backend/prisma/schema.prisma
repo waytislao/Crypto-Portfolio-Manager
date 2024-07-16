@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Crypto {
+  id        Int         @id @default(autoincrement())
+  portfolio Portfolio[]
+}
+
+model Portfolio {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  crypto_id  Int
+  quantity   Int?
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+  crypto     Crypto    @relation(fields: [crypto_id], references: [id])
+  user       Users     @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, crypto_id])
+}
+
+model Users {
+  id        Int         @id(map: "User_pkey") @default(autoincrement())
+  username  String      @unique(map: "User_username_key")
+  password  String      @db.Char(60)
+  portfolio Portfolio[]
+}
