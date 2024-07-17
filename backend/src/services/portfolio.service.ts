@@ -26,7 +26,10 @@ export const findPortfoliosByUserId = (userId: number) => {
     return portfolioRepository.findMany({
         where: {
             user_id: userId
-        }
+        },
+        include: {
+            crypto: true,
+        },
     });
 };
 

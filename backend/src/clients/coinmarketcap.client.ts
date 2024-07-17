@@ -16,7 +16,6 @@ export const getLatestCryptoPrice = async (cryptoSymbol: string, currencyCode: s
                 'Accept': 'application/json'
             }
         });
-
         return response.data.data[cryptoSymbol].quote[currencyCode].price;
     } catch (error) {
         console.error('Error fetching cryptocurrency price:', error);

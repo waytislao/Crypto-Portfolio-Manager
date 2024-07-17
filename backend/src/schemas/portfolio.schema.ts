@@ -1,5 +1,11 @@
-import {number, object, string, TypeOf} from 'zod';
+import z, {number, object, string, TypeOf} from 'zod';
+import {Currency, DefaultCurrencyCode} from "../utils/constants";
 
+export const geePortfoliosSchema = object({
+    query: object({
+        currencyCode: z.enum(Currency, {required_error: 'Currency Code is required', message: 'Invalid Currency Code'})
+    }),
+});
 export const createPortfolioSchema = object({
     body: object({
         cryptoSymbol: string({
@@ -30,6 +36,7 @@ export const deletePortfolioSchema = object({
     }),
 });
 
+export type GetPortfoliosSchemaInput = TypeOf<typeof geePortfoliosSchema>['query'];
 export type CreatePortfolioInput = TypeOf<typeof createPortfolioSchema>['body'];
 
 export type UpdatePortfolioInput = TypeOf<typeof updatePortfolioSchema>['body'];

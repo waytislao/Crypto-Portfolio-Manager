@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "Crypto" (
     "id" SERIAL NOT NULL,
-    "symbol" CHAR(255) NOT NULL,
+    "symbol" VARCHAR(255) NOT NULL,
 
     CONSTRAINT "Crypto_pkey" PRIMARY KEY ("id")
 );
@@ -11,7 +11,7 @@ CREATE TABLE "Portfolio" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "crypto_id" INTEGER NOT NULL,
-    "quantity" INTEGER,
+    "quantity" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 

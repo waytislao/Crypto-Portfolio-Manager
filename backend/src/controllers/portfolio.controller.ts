@@ -9,6 +9,7 @@ import {
 import {
     CreatePortfolioInput,
     DeletePortfolioParams,
+    GetPortfoliosSchemaInput,
     UpdatePortfolioInput,
     UpdatePortfolioParams
 } from "../schemas/portfolio.schema";
@@ -16,18 +17,27 @@ import {getLatestCryptoPrice} from "../clients/coinmarketcap.client";
 import {commonConstants, DefaultCurrencyCode, errorConstants} from "../utils/constants";
 
 export const getPortfolio = async (
-    req: Request,
+    req: Request<{}, {}, {}, GetPortfoliosSchemaInput>,
     res: Response,
     next: NextFunction
 ) => {
     try {
+        const currencyCode = req.query.currencyCode;
         const portfolios = await findPortfoliosByUserId(res.locals.user.id)
+
+        const responseData = portfolios.map(async (portfolio) => {
+            const latestCryptoPrice = await getLatestCryptoPrice(portfolio.crypto.symbol, currencyCode) || 0;
+
+            return ({
+                symbol: portfolio.crypto.symbol,
+                quantity: portfolio.quantity,
+                value: latestCryptoPrice * portfolio.quantity,
+            })
+        })
 
         res.status(200).status(200).json({
             status: commonConstants.Status.Success,
-            data: {
-                portfolios,
-            },
+            data: await Promise.all(responseData)
         });
 
     } catch (err: any) {

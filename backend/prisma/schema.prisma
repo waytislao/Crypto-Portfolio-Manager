@@ -9,7 +9,7 @@ datasource db {
 
 model Crypto {
   id        Int         @id @default(autoincrement())
-  symbol    String      @unique(map: "crypto_uq") @db.Char(255)
+  symbol    String      @unique(map: "crypto_uq") @db.VarChar(255)
   portfolio Portfolio[]
 }
 
@@ -17,7 +17,7 @@ model Portfolio {
   id         Int       @id @default(autoincrement())
   user_id    Int
   crypto_id  Int
-  quantity   Int?
+  quantity   Int       @default(0)
   created_at DateTime  @default(now())
   updated_at DateTime?
   crypto     Crypto    @relation(fields: [crypto_id], references: [id])
