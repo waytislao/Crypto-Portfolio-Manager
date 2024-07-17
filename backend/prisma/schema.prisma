@@ -9,6 +9,7 @@ datasource db {
 
 model Crypto {
   id        Int         @id @default(autoincrement())
+  symbol    String      @unique(map: "crypto_uq") @db.Char(255)
   portfolio Portfolio[]
 }
 

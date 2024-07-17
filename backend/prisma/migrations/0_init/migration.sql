@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE "Crypto" (
     "id" SERIAL NOT NULL,
+    "symbol" CHAR(255) NOT NULL,
 
     CONSTRAINT "Crypto_pkey" PRIMARY KEY ("id")
 );
@@ -25,6 +26,9 @@ CREATE TABLE "Users" (
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "crypto_uq" ON "Crypto"("symbol");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Portfolio_user_id_crypto_id_key" ON "Portfolio"("user_id", "crypto_id");

@@ -7,16 +7,16 @@ import {
 } from '../controllers/auth.controller';
 import { deserializeUser } from '../middleware/deserializeUser';
 import { requireUser } from '../middleware/requireUser';
-import { validate } from '../middleware/validate';
+import { validateAndTransform } from '../middleware/validateAndTransform';
 import { createUserSchema, loginUserSchema } from '../schemas/user.schema';
 
 const router = express.Router();
 
 // Register user
-router.post('/register', validate(createUserSchema), registerUserHandler);
+router.post('/register', validateAndTransform(createUserSchema), registerUserHandler);
 
 // Login user
-router.post('/login', validate(loginUserSchema), loginUserHandler);
+router.post('/login', validateAndTransform(loginUserSchema), loginUserHandler);
 
 // Logout user
 router.get('/logout', deserializeUser, requireUser, logoutHandler);

@@ -7,6 +7,7 @@ import cors from 'cors';
 import AppError from './utils/appError';
 import authRouter from './routes/auth.routes';
 import userRouter from './routes/user.routes';
+import portfolioRouter from './routes/portfolio.routes';
 import validateEnv from './utils/validateEnv';
 
 const main = async () => {
@@ -39,6 +40,7 @@ const main = async () => {
     // ROUTES
     app.use('/api/auth', authRouter);
     app.use('/api/users', userRouter);
+    app.use('/api/portfolio', portfolioRouter);
 
     // UNHANDLED ROUTE
     app.all('*', (req: Request, res: Response, next: NextFunction) => {

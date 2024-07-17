@@ -6,4 +6,6 @@ export default {
   refreshTokenPrivateKey: 'JWT_REFRESH_TOKEN_PRIVATE_KEY',
   refreshTokenPublicKey: 'JWT_REFRESH_TOKEN_PUBLIC_KEY',
 
+  coinmarketcapApiKey: 'COINMARKETCAP_API_KEY',
+
 };
