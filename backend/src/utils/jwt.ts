@@ -25,7 +25,9 @@ export const verifyJwt = <T>(
             config.get<string>(keyName),
             'base64'
         ).toString('ascii');
-        const decoded = jwt.verify(token, publicKey) as T;
+        const decoded = jwt.verify(token, publicKey, {
+            algorithms: ['RS256'],
+        }) as T;
 
         return decoded;
     } catch (error) {
