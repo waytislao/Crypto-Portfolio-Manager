@@ -7,7 +7,6 @@ import {signJwt, verifyJwt} from '../utils/jwt';
 import bcrypt from "bcryptjs";
 
 const cookiesOptions: CookieOptions = {
-    httpOnly: true,
     sameSite: 'lax',
 };
 

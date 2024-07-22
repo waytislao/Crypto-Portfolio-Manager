@@ -8,16 +8,16 @@ WORKDIR /app
 COPY package*.json ./
 
 # Step 4: Install dependencies
-RUN npm install
+RUN yarn
 
 # Step 5: Copy the rest of your application
 COPY . .
 
 # Optional: Build your React application for production
-RUN npm run build
+RUN yarn build
 
 # Step 7: Expose the application's port
 EXPOSE 3000
 
 # Step 8: Specify the command to run your application
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
