@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 interface APIResponse<TData> {
   data: TData;
   status: "success" | "fail";
+  message?: string;
 }
 
 const isTokenExpired = (token: string) => {
@@ -40,7 +41,6 @@ export const useAPIFetch = <TData>(
       if (isTokenExpired(accessToken!)) {
         await fetch(process.env.API_URL + "/api/auth/refresh", {
           method: "GET",
-          body: JSON.stringify(body),
         });
         accessToken = getCookie("access_token");
       }
@@ -53,16 +53,21 @@ export const useAPIFetch = <TData>(
         },
         body: JSON.stringify(body),
       });
-      const data = await res.json();
+      const data = (await res.json()) as APIResponse<TData>;
       setResponse(data);
+
+      if (data.status !== "success") {
+        setError(data.message || "");
+      }
+
       return data;
     } catch (error: any) {
-      console.error(error)
+      console.error(error);
       setError(error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { request, isLoading, response, isError: error };
+  return { request, isLoading, response, error };
 };

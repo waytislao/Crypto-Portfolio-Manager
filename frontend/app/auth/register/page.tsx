@@ -1,101 +1,184 @@
 "use client";
 
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { clsx } from "clsx";
+import { FaSpinner } from "react-icons/fa6";
 
 export default function Page() {
   const router = useRouter();
+  const [isPasswordMismatch, setIsPasswordMismatch] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  function validateForm(
+    username: FormDataEntryValue | null,
+    password: FormDataEntryValue | null,
+    passwordConfirm: FormDataEntryValue | null,
+  ) {
+    if (username === "" || password === "" || passwordConfirm === "") {
+      return false;
+    }
+
+    if (password !== passwordConfirm) {
+      setIsPasswordMismatch(true);
+      return false;
+    }
+
+    return true;
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const email = formData.get("email");
+    const username = formData.get("username");
     const password = formData.get("password");
+    const passwordConfirm = formData.get("passwordConfirm");
 
-    const response = await fetch("/api/auth/login", {
+    if (!validateForm(username, password, passwordConfirm)) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    const response = await fetch(process.env.API_URL + "/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, password, passwordConfirm }),
     });
 
+    setIsLoading(false);
     if (response.ok) {
-      router.push("/profile");
+      router.push("/auth/login");
     } else {
-      // Handle errors
+      setError("An error occurred. Please try again.");
     }
   }
 
   return (
-    <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-lg">
-        <form
-          action="#"
-          className="mb-0 mt-6 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8"
+    <>
+      <div
+        className={clsx(
+          "absolute block w-80 top-4 right-4 transition-opacity opacity-0",
+          { "opacity-100": error },
+        )}
+      >
+        <div
+          role="alert"
+          className="rounded border-s-4 border-red-500 bg-red-50 p-4"
         >
-          <p className="text-center text-lg font-medium">Register account</p>
-
-          <div>
-            <label htmlFor="username" className="sr-only">
-              Username
-            </label>
-
-            <div className="relative">
-              <input
-                type="text"
-                className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                placeholder="Enter username"
+          <div className="flex items-center gap-2 text-red-800">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="h-5 w-5"
+            >
+              <path
+                fillRule="evenodd"
+                d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+                clipRule="evenodd"
               />
+            </svg>
 
-            </div>
+            <strong className="block font-medium">{error}</strong>
           </div>
 
-          <div>
-            <label htmlFor="password" className="sr-only">
-              Password
-            </label>
-
-            <div className="relative">
-              <input
-                type="password"
-                className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                placeholder="Enter password"
-              />
-
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="password" className="sr-only">
-              Confirm Password
-            </label>
-
-            <div className="relative">
-              <input
-                type="password"
-                className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                placeholder="Enter password again"
-              />
-
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white"
-          >
-            Register
-          </button>
-
-          <p className="text-center text-sm text-gray-500">
-            Have an account?
-            <Link className="underline" href="/auth/login">
-              Login
-            </Link>
+          <p className="mt-2 text-sm text-red-700">
+            Please review the form and try again.
           </p>
-        </form>
+        </div>
       </div>
-    </div>
+      <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-lg">
+          <form
+            onSubmit={handleSubmit}
+            className="mb-0 mt-6 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8"
+          >
+            <p className="text-center text-lg font-medium">Register account</p>
+
+            <div>
+              <label htmlFor="username" className="sr-only">
+                Username
+              </label>
+
+              <div className="relative">
+                <input
+                  name="username"
+                  type="text"
+                  className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
+                  placeholder="Enter username"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+
+              <div className="relative">
+                <input
+                  name="password"
+                  type="password"
+                  className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
+                  placeholder="Enter password"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="passwordConfirm" className="sr-only">
+                Confirm Password
+              </label>
+
+              <div className="relative">
+                <input
+                  name="passwordConfirm"
+                  type="password"
+                  className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
+                  placeholder="Enter password again"
+                />
+              </div>
+            </div>
+
+            {isPasswordMismatch && (
+              <div className="mt-3 text-sm text-red-600">
+                Passwords do not match. Please check again.
+              </div>
+            )}
+
+            <button
+              disabled={isLoading}
+              type="submit"
+              className="flex w-full justify-center items-center rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white text-center"
+            >
+              <FaSpinner
+                className={clsx("animate-spin", {
+                  hidden: !isLoading,
+                })}
+                size={20}
+              />
+              <span
+                className={clsx({
+                  hidden: isLoading,
+                })}
+              >
+                Register
+              </span>
+            </button>
+
+            <p className="text-center text-sm text-gray-500">
+              Have an account?
+              <Link className="underline" href="/auth/login">
+                Login
+              </Link>
+            </p>
+          </form>
+        </div>
+      </div>
+    </>
   );
 }

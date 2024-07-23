@@ -33,6 +33,16 @@ export default function Page() {
           onChange={() => setReload(reload + 1)}
         />
       ))}
+
+      {response?.data.length === 0 && (
+        <>
+          <div className="col-span-3 text-center">
+            <p className="text-gray-500">
+              There's no coin in your portfolio. Add a coin to get started.
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 }
