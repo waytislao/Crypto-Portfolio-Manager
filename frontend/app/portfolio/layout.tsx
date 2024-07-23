@@ -1,14 +1,23 @@
 "use client";
 
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import { PortfolioProvider } from "@/app/portfolio/portfolioContext";
 import { CurrencySelector } from "@/app/portfolio/components/currencySelector";
+import { AddSymbolDialog } from "@/app/portfolio/components/AddSymbolDialog";
+import { useAPIFetch } from "@/app/lib/hooks/useAPIFetch";
+import { SymbolItemType } from "@/app/portfolio/components/SymbolItem";
 
 type LayoutProps = {
   children: ReactNode;
 };
 
 export default function Layout({ children }: LayoutProps) {
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const { request: reqAddSymbol } = useAPIFetch<SymbolItemType[]>(
+    "POST",
+    "/portfolio",
+  );
+
   const [currencyCode, setCurrencyCode] = React.useState(
     localStorage.getItem("currencyCode") || "THB",
   );
@@ -35,6 +44,9 @@ export default function Layout({ children }: LayoutProps) {
               <button
                 className="block rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring"
                 type="button"
+                onClick={() => {
+                  setOpenAddDialog(true);
+                }}
               >
                 Add Investment
               </button>
@@ -50,6 +62,21 @@ export default function Layout({ children }: LayoutProps) {
         <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
           {children}
         </div>
+
+        <AddSymbolDialog
+          onClose={() => {
+            setOpenAddDialog(false);
+          }}
+          open={openAddDialog}
+          onConfirm={async (symbol, quantity) => {
+            const res = await reqAddSymbol({ cryptoSymbol: symbol, quantity });
+            if (res.status === "fail") {
+              alert(res.message);
+            } else {
+              window.location.reload();
+            }
+          }}
+        />
       </main>
     </PortfolioProvider>
   );

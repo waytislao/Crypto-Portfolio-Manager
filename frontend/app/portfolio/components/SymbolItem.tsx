@@ -2,6 +2,7 @@ import ImageWithFallback from "@/app/lib/components/imageWithFallback";
 import { useState } from "react";
 import { DeleteSymbolDialog } from "@/app/portfolio/components/DeleteSymbolDialog";
 import { useAPIFetch } from "@/app/lib/hooks/useAPIFetch";
+import { UpdateSymbolDialog } from "@/app/portfolio/components/UpdateSymbolDialog";
 
 export interface SymbolItemType {
   symbol: string;
@@ -20,9 +21,14 @@ export const SymbolItem = ({
   currencyFormatter,
   onChange,
 }: SymbolItemProps) => {
-  const [open, setOpen] = useState(false);
-  const { request, isLoading, response } = useAPIFetch<SymbolItemType[]>(
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const { request: reqDelete } = useAPIFetch<SymbolItemType[]>(
     "DELETE",
+    "/portfolio/" + item.symbol,
+  );
+  const { request: reqEdit } = useAPIFetch<SymbolItemType[]>(
+    "PUT",
     "/portfolio/" + item.symbol,
   );
 
@@ -47,12 +53,17 @@ export const SymbolItem = ({
             {currencyFormatter.format(item.value)}
           </p>
         </div>
-        <button className="inline-block rounded border px-2 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring active:bg-indigo-500 ml-auto">
+        <button
+          className="inline-block rounded border px-2 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring active:bg-indigo-500 ml-auto"
+          onClick={() => {
+            setOpenEditDialog(true);
+          }}
+        >
           Edit
         </button>
         <button
           className="inline-block rounded border px-2 py-2 text-sm font-medium text-red-600 hover:bg-red-600 hover:text-white focus:outline-none focus:ring active:bg-red-500"
-          onClick={() => setOpen(true)}
+          onClick={() => setOpenDeleteDialog(true)}
         >
           Delete
         </button>
@@ -60,11 +71,22 @@ export const SymbolItem = ({
       <DeleteSymbolDialog
         data={item}
         onClose={() => {
-          setOpen(false);
+          setOpenDeleteDialog(false);
         }}
-        open={open}
+        open={openDeleteDialog}
         onConfirm={async () => {
-          await request();
+          await reqDelete();
+          onChange();
+        }}
+      />
+      <UpdateSymbolDialog
+        data={item}
+        onClose={() => {
+          setOpenEditDialog(false);
+        }}
+        open={openEditDialog}
+        onConfirm={async (quantity) => {
+          await reqEdit({ quantity });
           onChange();
         }}
       />

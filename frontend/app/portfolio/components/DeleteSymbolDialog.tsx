@@ -4,7 +4,10 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowPathIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 import React from "react";
 import { SymbolItemType } from "@/app/portfolio/components/SymbolItem";
 
@@ -28,8 +31,14 @@ export const DeleteSymbolDialog = ({
     setIsDeleting(false);
     onClose();
   };
+  const handleOnClose = () => {
+    if (!isDeleting) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} className="relative z-10">
+    <Dialog open={open} onClose={handleOnClose} className="relative z-10">
       <DialogBackdrop
         transition
         className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
@@ -68,16 +77,26 @@ export const DeleteSymbolDialog = ({
             </div>
             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
               <button
+                disabled={isDeleting}
                 type="button"
                 onClick={handleConfirm}
                 className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
               >
+                {isDeleting ? (
+                  <ArrowPathIcon
+                    aria-hidden="true"
+                    className="h-5 w-5 text-white animate-spin"
+                  />
+                ) : (
+                  "Delete"
+                )}
                 Delete
               </button>
               <button
+                disabled={isDeleting}
                 type="button"
                 data-autofocus
-                onClick={() => onClose()}
+                onClick={() => handleOnClose()}
                 className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
               >
                 Cancel
