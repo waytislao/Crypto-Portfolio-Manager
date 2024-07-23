@@ -6,6 +6,7 @@ import { CurrencySelector } from "@/app/portfolio/components/currencySelector";
 import { AddSymbolDialog } from "@/app/portfolio/components/AddSymbolDialog";
 import { useAPIFetch } from "@/app/lib/hooks/useAPIFetch";
 import { SymbolItemType } from "@/app/portfolio/components/SymbolItem";
+import { getCookie, setCookie } from "cookies-next";
 
 type LayoutProps = {
   children: ReactNode;
@@ -19,11 +20,12 @@ export default function Layout({ children }: LayoutProps) {
   );
 
   const [currencyCode, setCurrencyCode] = React.useState(
-    localStorage.getItem("currencyCode") || "THB",
+    getCookie("currencyCode") || "THB",
   );
   const handleCurrencyChange = (newCurrencyCode: string) => {
     setCurrencyCode(newCurrencyCode);
-    localStorage.setItem("currencyCode", newCurrencyCode);
+    setCookie("currencyCode", newCurrencyCode);
+    window.location.reload();
   };
   return (
     <PortfolioProvider currencyCode={currencyCode}>
@@ -36,7 +38,7 @@ export default function Layout({ children }: LayoutProps) {
               </h1>
 
               <p className="mt-1.5 text-sm text-gray-500">
-                Let's see how your investments are doing
+                {"Let's see how your investments are doing"}
               </p>
             </div>
 

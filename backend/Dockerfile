@@ -6,6 +6,12 @@ RUN yarn
 
 COPY . .
 
-EXPOSE 3000
+ARG DATABASE_URL
+
+ENV DATABASE_URL ${DATABASE_URL}
+
+RUN npx prisma generate
+
+EXPOSE 8000
 
 CMD ["yarn", "start"]
