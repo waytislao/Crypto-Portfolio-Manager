@@ -38,7 +38,7 @@ export default function Page() {
         <>
           <div className="col-span-3 text-center">
             <p className="text-gray-500">
-              There's no coin in your portfolio. Add a coin to get started.
+              {"There's no coin in your portfolio. Add a coin to get started."}
             </p>
           </div>
         </>

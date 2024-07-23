@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useContext } from "react";
 
 export interface PortfolioContextType {
@@ -21,7 +23,7 @@ export const PortfolioProvider = ({
 }) => {
   const currencyFormatter = new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: currencyCode,
+    currency: currencyCode || "THB",
   });
   return (
     <PortfolioContext.Provider value={{ currencyFormatter, currencyCode }}>

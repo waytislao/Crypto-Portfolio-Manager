@@ -1,12 +1,11 @@
 "use client";
 
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { PortfolioProvider } from "@/app/portfolio/portfolioContext";
 import { CurrencySelector } from "@/app/portfolio/components/currencySelector";
 import { AddSymbolDialog } from "@/app/portfolio/components/AddSymbolDialog";
 import { useAPIFetch } from "@/app/lib/hooks/useAPIFetch";
 import { SymbolItemType } from "@/app/portfolio/components/SymbolItem";
-import { getCookie, setCookie } from "cookies-next";
 
 type LayoutProps = {
   children: ReactNode;
@@ -19,14 +18,17 @@ export default function Layout({ children }: LayoutProps) {
     "/portfolio",
   );
 
-  const [currencyCode, setCurrencyCode] = React.useState(
-    getCookie("currencyCode") || "THB",
-  );
+  const [currencyCode, setCurrencyCode] = React.useState("THB");
+
   const handleCurrencyChange = (newCurrencyCode: string) => {
     setCurrencyCode(newCurrencyCode);
-    setCookie("currencyCode", newCurrencyCode);
-    window.location.reload();
+    localStorage.setItem("currencyCode", newCurrencyCode);
   };
+
+  useEffect(() => {
+    handleCurrencyChange(localStorage.getItem("currencyCode") || "THB");
+  }, []);
+
   return (
     <PortfolioProvider currencyCode={currencyCode}>
       <header className="bg-gray-50">
@@ -72,7 +74,7 @@ export default function Layout({ children }: LayoutProps) {
           open={openAddDialog}
           onConfirm={async (symbol, quantity) => {
             const res = await reqAddSymbol({ cryptoSymbol: symbol, quantity });
-            if (res.status === "fail") {
+            if (res?.status === "fail") {
               alert(res.message);
             } else {
               window.location.reload();
